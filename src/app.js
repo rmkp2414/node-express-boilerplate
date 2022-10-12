@@ -38,8 +38,22 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors
-app.use(cors());
-app.options('*', cors());
+// app.use(cors());
+// app.options('*', cors());
+// app.use(
+  // cors({
+  //   origin: "http://localhost:3000",
+  //   credentials: true
+  // })
+// );
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+
+
+// app.use(cors({
+//   origin: 'http://localhost:3000'
+// }));
 
 // jwt authentication
 app.use(passport.initialize());
@@ -55,6 +69,7 @@ app.use('/v1', routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
+  // console.log(req)
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 
