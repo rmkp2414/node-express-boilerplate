@@ -23,7 +23,8 @@ const upload = async (req, res) => {
     // res.status(httpStatus.CREATED).send("file");
   } catch (err) { //\\ error handling
     res.status(500).send({
-      message: `Unable to upload the file: ${req.file.originalname}. ${err}`,
+      // message: `Unable to upload the file: ${req.file.originalname}. ${err}`,
+      message: `Unable to upload the file: ${err}`
     });
   }
 };
