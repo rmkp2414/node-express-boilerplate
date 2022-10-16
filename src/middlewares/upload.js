@@ -6,7 +6,8 @@ let storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // console.log('__basedir :'+ __basedir)
     // cb(null, __basedir + "/resources/static/assets/uploads/");
-    cb(null, "E:\\Projects\\ae.geomanager.se\\app.geomanager.se\\geomanager.se.be.api\\gm.be.api\\src\\uploads");
+    // cb(null, "E:\\Projects\\ae.geomanager.se\\app.geomanager.se\\geomanager.se.be.api\\gm.be.api\\src\\uploads");
+    cb(null, "../uploads");
   },
   filename: (req, file, cb) => {
     console.log(file.originalname);
