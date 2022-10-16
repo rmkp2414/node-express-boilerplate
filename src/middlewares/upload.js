@@ -1,5 +1,6 @@
 // import the multer module before configuring it to use the disc storage engine
 const util = require("util");
+const path = require('path');
 const multer = require("multer");
 const maxSize = 2 * 1024 * 1024;
 let storage = multer.diskStorage({
@@ -7,7 +8,7 @@ let storage = multer.diskStorage({
     // console.log('__basedir :'+ __basedir)
     // cb(null, __basedir + "/resources/static/assets/uploads/");
     // cb(null, "E:\\Projects\\ae.geomanager.se\\app.geomanager.se\\geomanager.se.be.api\\gm.be.api\\src\\uploads");
-    cb(null, "./uploads");
+    cb(null, path.join(__dirname, '../uploads'));
   },
   filename: (req, file, cb) => {
     console.log(file.originalname);
