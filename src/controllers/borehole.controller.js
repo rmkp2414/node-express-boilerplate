@@ -2,54 +2,105 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userService, boreholeService } = require('../services');
+const { boreholeService } = require('../services');
 
-const createUser = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
-  res.status(httpStatus.CREATED).send(user);
+
+const createBorehole = catchAsync(async (req, res) => {
+  const analysistype = await analysistypeService.createBorehole(req.body.values);
+  res.status(httpStatus.CREATED).send(analysistype);
 });
 
-const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+const getBoreholes = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['code', 'role']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await userService.queryUsers(filter, options);
+  const result = await analysistypeService.queryBoreholes(filter, options);
   res.send(result);
 });
 
-
-
-const getUser = catchAsync(async (req, res) => {
-  const user = await userService.getUserById(req.params.userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+const getBorehole = catchAsync(async (req, res) => {
+  const analysistype = await analysistypeService.getBoreholeByCode(req.params.code);
+  if (!analysistype) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stop Code not found');
   }
-  res.send(user);
+  res.send(analysistype);
 });
 
-const updateUser = catchAsync(async (req, res) => {
-  const user = await userService.updateUserById(req.params.userId, req.body);
-  res.send(user);
+const updateBorehole = catchAsync(async (req, res) => {
+  const analysistype = await analysistypeService.updateBoreholeById(req.params.analysistypeId, req.body);
+  res.send(analysistype);
 });
 
-const deleteUser = catchAsync(async (req, res) => {
-  await userService.deleteUserById(req.params.userId);
+const deleteBorehole = catchAsync(async (req, res) => {
+  await analysistypeService.deleteBoreholeById(req.params.analysistypeId);
   res.status(httpStatus.NO_CONTENT).send();
 });
-
-
-/* new methods adding  */
 
 const getBoreholeByMethodAndId = catchAsync(async(req,res)=>{
   console.log(req.parms)
   const result = await boreholeService.getBoreholeByMethodAndId(req.params);
   res.send(result);
 })
-module.exports = {
-  createUser,
-  getUsers,
-  getUser,
-  updateUser,
-  deleteUser,
 
+module.exports = {
+  createBorehole,
+  getBoreholes,
+  getBorehole,
+  updateBorehole,
+  deleteBorehole,
   getBoreholeByMethodAndId
 };
+
+
+// const httpStatus = require('http-status');
+// const pick = require('../utils/pick');
+// const ApiError = require('../utils/ApiError');
+// const catchAsync = require('../utils/catchAsync');
+// const { userService, boreholeService } = require('../services');
+
+// const createUser = catchAsync(async (req, res) => {
+//   const user = await userService.createUser(req.body);
+//   res.status(httpStatus.CREATED).send(user);
+// });
+
+// const getUsers = catchAsync(async (req, res) => {
+//   const filter = pick(req.query, ['name', 'role']);
+//   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+//   const result = await userService.queryUsers(filter, options);
+//   res.send(result);
+// });
+
+
+
+// const getUser = catchAsync(async (req, res) => {
+//   const user = await userService.getUserById(req.params.userId);
+//   if (!user) {
+//     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+//   }
+//   res.send(user);
+// });
+
+// const updateUser = catchAsync(async (req, res) => {
+//   const user = await userService.updateUserById(req.params.userId, req.body);
+//   res.send(user);
+// });
+
+// const deleteUser = catchAsync(async (req, res) => {
+//   await userService.deleteUserById(req.params.userId);
+//   res.status(httpStatus.NO_CONTENT).send();
+// });
+
+
+// /* new methods adding  */
+
+
+
+
+// module.exports = {
+//   createUser,
+//   getUsers,
+//   getUser,
+//   updateUser,
+//   deleteUser,
+
+//   getBoreholeByMethodAndId
+// };

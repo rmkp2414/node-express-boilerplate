@@ -5,6 +5,10 @@ const docsRoute = require('./docs.route');
 const boreholeRoute = require('./borehole.route');
 const fileRoute = require('./file.route');
 const stopcodeRoute = require('./stopcode.route');
+const firmRoute = require('./firm.route');
+const coordinatetesystemRoute = require('./coordinatesystem.route');
+const datumsystemRoute = require('./datumsystem.route');
+const projectsRoute= require('./project.route');
 
 
 const config = require('../../config/config');
@@ -31,6 +35,22 @@ const defaultRoutes = [
   {
     path: '/stopcodes',
     route: stopcodeRoute,
+  },
+  {
+    path: '/firms',
+    route: firmRoute,
+  },
+  {
+    path: '/coordinatesystems',
+    route: coordinatetesystemRoute,
+  },
+  {
+    path: '/datumsystems',
+    route: datumsystemRoute,
+  },
+  {
+    path: '/projects',
+    route: projectsRoute,
   },
 ];
 

@@ -1,70 +1,38 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-// const userController = require('../../controllers/user.controller');
-// const fileController = require('../../controllers/file.controller');
+const stopcodeValidation = require('../../validations/stopcode.validation');
 const stopcodeController = require('../../controllers/stopcode.controller');
 
 const router = express.Router();
 
-// router
-//   .route('/')
-//   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
-//   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
-
-// const express = require("express");
-// const router = express.Router();
-// const controller = require("../controller/file.controller");
-// let routes = (app) => {
-//   router.post("/upload", fileController.upload);
-//   // app.use(router);
-// };
-// module.exports = routes;
-
-// router
-//   .route('/:userId')
-//   .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
-//   .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
-//   .delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.deleteUser);
-
-
-// router
-// .route('/')
-// .get(auth('getUsers'),validate(userValidation.getUser),fileController.createFile)
-// .post(auth('getUsers'),validate(userValidation.getUser), fileController.upload);
-// .post(auth('files'), validate(userValidation.createUser), fileController.createFile)
-// .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
-
-// .get(auth('getUsers'),validate(userValidation.getUser),ediController.get204);
-
-// router
-//   .route('/')
-  // .get(auth('getUsers'), validate(userValidation.getUser), fileController.createFile)
-  // .post(auth('getUsers'), validate(userValidation.getUser), fileController.upload);
-
-  router
+router
   .route('/')
-  // .post(auth('getUsers'), validate(userValidation.getUser), fileController.upload);
-  .get(stopcodeController.getStopCodes)
-  .post(auth('getUsers'), validate(userValidation.getUser), stopcodeController.createStopCode);
+  .post(auth('manageStopCodes'), validate(stopcodeValidation.createStopCode), stopcodeController.createStopCode)
+  .get(auth('getStopCodes'), validate(stopcodeValidation.getStopCodes), stopcodeController.getStopCodes);
+
+router
+  .route('/:stopcodeId')
+  .get(auth('getStopCodes'), validate(stopcodeValidation.getStopCode), stopcodeController.getStopCode)
+  .patch(auth('manageStopCodes'), validate(stopcodeValidation.updateStopCode), stopcodeController.updateStopCode)
+  .delete(auth('manageStopCodes'), validate(stopcodeValidation.deleteStopCode), stopcodeController.deleteStopCode);
 
 module.exports = router;
 
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: User management and retrieval
+ *   name: StopCodes
+ *   description: StopCode management and retrieval
  */
 
 /**
  * @swagger
- * /users:
+ * /stopcodes:
  *   post:
- *     summary: Create a user
- *     description: Only admins can create other users.
- *     tags: [Users]
+ *     summary: Create a stopcode
+ *     description: Only admins can create other stopcodes.
+ *     tags: [StopCodes]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -92,19 +60,19 @@ module.exports = router;
  *                 description: At least one number and one letter
  *               role:
  *                  type: string
- *                  enum: [user, admin]
+ *                  enum: [stopcode, admin]
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
- *               role: user
+ *               role: stopcode
  *     responses:
  *       "201":
  *         description: Created
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/StopCode'
  *       "400":
  *         $ref: '#/components/responses/DuplicateEmail'
  *       "401":
@@ -113,9 +81,9 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *
  *   get:
- *     summary: Get all users
- *     description: Only admins can retrieve all users.
- *     tags: [Users]
+ *     summary: Get all stopcodes
+ *     description: Only admins can retrieve all stopcodes.
+ *     tags: [StopCodes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -123,12 +91,12 @@ module.exports = router;
  *         name: name
  *         schema:
  *           type: string
- *         description: User name
+ *         description: StopCode name
  *       - in: query
  *         name: role
  *         schema:
  *           type: string
- *         description: User role
+ *         description: StopCode role
  *       - in: query
  *         name: sortBy
  *         schema:
@@ -140,7 +108,7 @@ module.exports = router;
  *           type: integer
  *           minimum: 1
  *         default: 10
- *         description: Maximum number of users
+ *         description: Maximum number of stopcodes
  *       - in: query
  *         name: page
  *         schema:
@@ -159,7 +127,7 @@ module.exports = router;
  *                 results:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/User'
+ *                     $ref: '#/components/schemas/StopCode'
  *                 page:
  *                   type: integer
  *                   example: 1
@@ -180,11 +148,11 @@ module.exports = router;
 
 /**
  * @swagger
- * /users/{id}:
+ * /stopcodes/{id}:
  *   get:
- *     summary: Get a user
- *     description: Logged in users can fetch only their own user information. Only admins can fetch other users.
- *     tags: [Users]
+ *     summary: Get a stopcode
+ *     description: Logged in stopcodes can fetch only their own stopcode information. Only admins can fetch other stopcodes.
+ *     tags: [StopCodes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -193,14 +161,14 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: StopCode id
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/StopCode'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -209,9 +177,9 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   patch:
- *     summary: Update a user
- *     description: Logged in users can only update their own information. Only admins can update other users.
- *     tags: [Users]
+ *     summary: Update a stopcode
+ *     description: Logged in stopcodes can only update their own information. Only admins can update other stopcodes.
+ *     tags: [StopCodes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -220,7 +188,7 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: StopCode id
  *     requestBody:
  *       required: true
  *       content:
@@ -249,7 +217,7 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                $ref: '#/components/schemas/StopCode'
  *       "400":
  *         $ref: '#/components/responses/DuplicateEmail'
  *       "401":
@@ -260,9 +228,9 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  *   delete:
- *     summary: Delete a user
- *     description: Logged in users can delete only themselves. Only admins can delete other users.
- *     tags: [Users]
+ *     summary: Delete a stopcode
+ *     description: Logged in stopcodes can delete only themselves. Only admins can delete other stopcodes.
+ *     tags: [StopCodes]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -271,7 +239,7 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: User id
+ *         description: StopCode id
  *     responses:
  *       "200":
  *         description: No content

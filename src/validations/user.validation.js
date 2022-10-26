@@ -1,12 +1,27 @@
 const Joi = require('joi');
 const { password, objectId } = require('./custom.validation');
 
+
+
 const createUser = {
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
+    firmname: Joi.string().required(),
+    firstname: Joi.string().required(),
+    lastname: Joi.string().required(),
+    title:Joi.string().required(),
+    userrole: Joi.string().required().valid('user', 'admin','firmadmin'),
+    workphone: Joi.string().required(),
+    mobile: Joi.string().required(),
+    email : Joi.string().required().email(),
     password: Joi.string().required().custom(password),
-    name: Joi.string().required(),
-    role: Joi.string().required().valid('user', 'admin'),
+    userstatus: Joi.string().required(),
+
+
+
+    // email: Joi.string().required().email(),
+    // password: Joi.string().required().custom(password),
+    // firstname: Joi.string().required(),
+    // role: Joi.string().required().valid('user', 'admin'),
   }),
 };
 
@@ -32,9 +47,19 @@ const updateUser = {
   }),
   body: Joi.object()
     .keys({
-      email: Joi.string().email(),
-      password: Joi.string().custom(password),
-      name: Joi.string(),
+      firmname: Joi.string().required(),
+      firstname: Joi.string().required(),
+      lastname: Joi.string().required(),
+      title:Joi.string().required(),
+      role: Joi.string().required().valid('user', 'admin','firmadmin'),
+      workphone: Joi.string().required(),
+      mobile: Joi.string().required(),
+      email : Joi.string().required().email(),
+      password: Joi.string().required().custom(password),
+      status: Joi.string().required(),
+      // email: Joi.string().email(),
+      // password: Joi.string().custom(password),
+      // name: Joi.string(),
     })
     .min(1),
 };

@@ -1,14 +1,46 @@
 const mongoose = require('mongoose');
+var Schema = mongoose.Schema
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
 
+
+
 const userSchema = mongoose.Schema(
   {
-    name: {
+    firmname: {
+      type: Schema.Types.ObjectId,
+      ref: 'Firm'
+    },
+    firstname: {
       type: String,
-      required: true,
+      // required: true,
+      trim: true,
+    },
+    lastname: {
+      type: String,
+      // required: true,
+      trim: true,
+    },
+    title: {
+      type: String,
+      // required: true,
+      trim: true,
+    },
+    userrole: {
+      type: String,
+      enum: ["admin", "firmadmin", "user"],
+      required:true
+    },
+    workphone: {
+      type: String,
+      // required: true,
+      trim: true,
+    },
+    mobile: {
+      type: String,
+      // required: true,
       trim: true,
     },
     email: {
@@ -44,6 +76,9 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+    }
   },
   {
     timestamps: true,

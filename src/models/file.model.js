@@ -29,6 +29,9 @@ const fileSchema = mongoose.Schema(
       type: String,
       required: true,      
     },
+    originalname:{
+      type:String
+    }
     // data:{
     //   method:{
     //     type:String,

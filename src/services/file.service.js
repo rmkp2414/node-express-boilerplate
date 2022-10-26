@@ -54,10 +54,13 @@ when the translation comes do it as Line X
 whenevr we need to add new params to the main block since the sgf is outdated
 create a library for the main block and data block in the Master Configure
 Super user Access Only
-Attachment B.
-Parameters in the main block
 
-look in to section A for methods and section for main block
+in CSVs
+Attachment A for methods
+Attachment B.Method Codes
+in CSV files Parameters in the main block
+
+look in to section A  and section for main block
 refer section D for the data block
 */
 
@@ -76,6 +79,25 @@ var FINISHREADINGPREVIOUSBLOCK = false;
 var ALLDATA = []
 
 var boreholeBucket = []
+
+/* Requirements
+When usernavigates to a project he will be shown all the boreholes related to that 
+when he click on a borehole all the methods performed will be shown 
+
+the user should be able to insert a new record in the grid 
+there is an order of sorting the data 
+
+when user enters some details 
+
+
+when user clicks on the graph button the graphs for all the parameters will be shown.
+
+so for all the method types we need to have model classes
+
+we are not going to save data for methods individually
+
+
+*/
 
 var _activeParamsFromDB = []
 // const _activeMethodaFromDB = await Stdmethodparam.find({})
@@ -273,6 +295,29 @@ var _activeParamsFromDB = []
                   if(JSON.stringify(x)===JSON.stringify(e)){
                     console.log(x==e)
                     bh.data.datablock.splice(i,1)
+                    //here we will have to do the merging
+                    //if the D is equal add the additional params to the same block 
+                    //prev data D=0.1,C=0.5,X=0.2
+                    //new row D=0.1,N=0.8,Z=0.3,C=0.6
+                    //db row after update D=0.1,C=0.5,X=0.2,N=0.8
+                    //? what happens for same row in a new file different value is available for existing row***
+                    //can we have two rows with different data for the same row - I think we cannot and we should not
+
+                    //ANSWER RECEIVED
+                    // in that case we need to ask the user 3 options: choose the first data, choose the second data, add that information 
+                    // to a new borehole because we cant merge that data since it is in the same depth                    
+                  }
+                  else{
+                    //here i think we can get the difference between two objects
+                    //we cant tell from whihc file this data comes as there is a merging happends
+                    //we can update a last update data and last added file name or somethisn
+
+                    //a new screen with 
+                    var test = JSON.stringify(x).diff(JSON.stringify(e))
+                    //ammend the diff to existing row 
+
+                    //save them as conflicted data and until they clean them up show them a notification saying that 
+                    //there are some conflickted data and set them manually
                   }
                 })
               })            

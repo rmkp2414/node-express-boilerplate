@@ -52,8 +52,8 @@ const createStopCode = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryStopCodes = async (filter, options) => {
-  // const stopcodes = await StopCode.paginate(filter, options);
-  const stopcodes = await StopCode.find({});
+  const stopcodes = await StopCode.paginate(filter, options);
+  // const stopcodes = await StopCode.find({});
   return stopcodes;
 };
 
