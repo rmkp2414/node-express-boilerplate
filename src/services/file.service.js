@@ -154,10 +154,13 @@ var _activeParamsFromDB = []
             //   return p.param == cur[0] && p.status == 'active'
             // })
             // isActiveParam ?  row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` : null        
-            row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},`
+            
+            // row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` //replace with this 
+              row += `${cur[0]},${cur[1]},`
+             //DATA.push(`${cur[0]},${cur[1]}`)
           });
-           DATA.push(JSON.stringify({row}))
-          //DATA.push({row})
+          //  DATA.push(JSON.stringify({row}))
+           DATA.push({row})
         } 
 
         if(FINISHREADINGPREVIOUSBLOCK){          
@@ -313,7 +316,7 @@ var _activeParamsFromDB = []
                     //we can update a last update data and last added file name or somethisn
 
                     //a new screen with 
-                    var test = JSON.stringify(x).diff(JSON.stringify(e))
+                    // var test = JSON.stringify(x).diff(JSON.stringify(e))
                     //ammend the diff to existing row 
 
                     //save them as conflicted data and until they clean them up show them a notification saying that 

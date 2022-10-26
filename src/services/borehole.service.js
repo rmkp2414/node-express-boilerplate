@@ -89,7 +89,7 @@ const deleteUserById = async (userId) => {
  const getBoreholeByMethodAndId = async (method) => {
   // return Borehole.findOne({ 'methodname': method ,'boreholename' : '21A061' });
   // return Borehole.find({ 'methodname': method ,'boreholename' : '21A061' });
-  return Borehole.find({'boreholename' : '21A061' });
+  return Borehole.find({'boreholename' : '21A063' });
 };
 
 
