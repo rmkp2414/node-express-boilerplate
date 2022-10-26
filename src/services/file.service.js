@@ -156,7 +156,7 @@ var _activeParamsFromDB = []
             // isActiveParam ?  row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` : null        
             
             // row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` //replace with this 
-              row += `${cur[0]},${cur[1]},`
+              row += `{${cur[0]}:${cur[1]}},`
              //DATA.push(`${cur[0]},${cur[1]}`)
           });
           //  DATA.push(JSON.stringify({row}))
