@@ -131,36 +131,74 @@ var _activeParamsFromDB = []
             _borehole.boreholename = boreholename
             _borehole.projectid  = '0000001'
             _borehole.firmid = 'COMPANYID'
-            
+            _borehole.filepath = '/uploads'
+            _borehole.filename =  file.originalname
+            _borehole.uploadedby = "kapila" //get the name from token
            
           var HM = line.match(/HM=(.*?),/)
           var method = _globalMethodNames.filter(m => {
             return m.code == HM[1]
           })
           method.length > 0 ? METHODNAMES.push(method[0].name) : 'UNKNOWN'
-
-          _borehole.data = {'filepath' : '/uploads', 'file' : file.originalname , 'methodname' : method.length > 0 ? method[0].name :'UNKNOWN' }
+          _borehole.methodname =  method.length > 0 ? method[0].name :'UNKNOWN' 
+          // _borehole.data = {'filepath' : '/uploads', 'file' : file.originalname , 'methodname' : method.length > 0 ? method[0].name :'UNKNOWN' }
+          
         }
+
+        //old code start
+        // if (line.match(/^D=/)) {
+        //   var data = line.split(',')
+        //   var row = ''
+        //   //get all params list in db and check the available params are in it
+        //   // for this method type check what params have configured read
+        //   //get the order of the params from config for this method.
+        //   data.forEach(currentItem => {
+        //     var cur = currentItem.split('=')
+        //     //check whether this is an active column for this method
+        //     // var isActiveParam = await _activeMethodaFromDB.filter((p) => {
+        //     //   return p.param == cur[0] && p.status == 'active'
+        //     // })
+        //     // isActiveParam ?  row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` : null        
+            
+        //     // row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` //replace with this 
+        //       row += `${cur[0]}:${cur[1]},`
+              
+        //      //DATA.push(`${cur[0]},${cur[1]}`)
+        //   });
+        //   //  DATA.push(JSON.stringify({row}))
+        //   //  DATA.push({row})
+        //   var tmp = {row}
+        //   // DATA.push(row)
+        //   DATA.push(tmp)
+        // } 
+        //pld code ends
+
         if (line.match(/^D=/)) {
-          var data = line.split(',')
-          var row = ''
+          var tmpline = line.replace(/^/,'{"').replace(/$/,'"}').replace(/=/g,'":"').replace(/,/g,'","')
+          DATA.push(tmpline)
+          //var data = line.split(',')
+          //var row = ''
           //get all params list in db and check the available params are in it
           // for this method type check what params have configured read
           //get the order of the params from config for this method.
-          data.forEach(currentItem => {
-            var cur = currentItem.split('=')
-            //check whether this is an active column for this method
-            // var isActiveParam = await _activeMethodaFromDB.filter((p) => {
-            //   return p.param == cur[0] && p.status == 'active'
-            // })
-            // isActiveParam ?  row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` : null        
+          // data.forEach(currentItem => {
+          //   var cur = currentItem.split('=')
+          //   //check whether this is an active column for this method
+          //   // var isActiveParam = await _activeMethodaFromDB.filter((p) => {
+          //   //   return p.param == cur[0] && p.status == 'active'
+          //   // })
+          //   // isActiveParam ?  row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` : null        
             
-            // row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` //replace with this 
-              row += `{${cur[0]}:${cur[1]}},`
-             //DATA.push(`${cur[0]},${cur[1]}`)
-          });
-          //  DATA.push(JSON.stringify({row}))
-           DATA.push({row})
+          //   // row += `{'param': '${cur[0]}', 'val': '${cur[1]}'},` //replace with this 
+          //     row += `${cur[0]}:${cur[1]},`
+              
+          //    //DATA.push(`${cur[0]},${cur[1]}`)
+          // });
+          // //  DATA.push(JSON.stringify({row}))
+          // //  DATA.push({row})
+          // var tmp = {row}
+          // // DATA.push(row)
+          // DATA.push(tmp)
         } 
 
         if(FINISHREADINGPREVIOUSBLOCK){          
@@ -180,7 +218,9 @@ var _activeParamsFromDB = []
             // else{
             //     _borehole.data.datablock = data           
             // }
-            _borehole.data.datablock = data 
+
+            // _borehole.data.datablock = data 
+            _borehole.data = data 
             boreholeBucket.push(_borehole)
             DATA = []
             _borehole = {}
@@ -245,7 +285,8 @@ var _activeParamsFromDB = []
       }             
   }).on('end',async ()=>{
     var data = DATA
-    _borehole.data.datablock = data           
+    // _borehole.data.datablock = data  
+    _borehole.data = data           
     boreholeBucket.push(_borehole)
     _borehole = {}
     DATA = []
@@ -280,60 +321,152 @@ var _activeParamsFromDB = []
     /* start save data */
     boreholeBucket.forEach(async(bh,i)=>{
       var dbborehole = await Borehole.findByBoreholeName(bh.boreholename)
+     // console.log(dbborehole.methodname == bh.methodname)
+     // return;
       if(dbborehole){
+        console.log('1' + dbborehole)
+        if(bh.methodname == dbborehole.methodname ){
+          
+          await bh.data.forEach((filerow,filerowindex)=>{
+            dbborehole.data.forEach((dbrow,dbrowindex)=>{
+
+             // await processLines(filerow,dbrow)
+              if(JSON.stringify(filerow)===JSON.stringify(dbrow)){
+                console.log('Found Identical lRows' + filerow + ' = ' + dbrow)
+                bh.data.splice(i,1) //remove row from databucket not going to db
+              }
+              else{
+                //try to merge
+                //var tmp = Array.prototype.push.apply(filerow,dbrow);
+                
+                //console.log('merged' + tmp)
+              }
+            })
+          })
+          bh.data.length > 0 ? await Borehole.updateOne({ _id: dbborehole._id },{ $push: { data: bh.data }}) : null
+        }
+      }
+      else{
+        console.log('2' + dbborehole)
+        console.log('insert new borehole data set')
+        await Borehole.create(bh)
+      }
+      return;
+      //existing borehole details
+      dbborehole.then(docs=>{
+         console.log(docs)
+        // if(bh.methodname == docs.methodnme ){
+          
+        //   await bh.data.forEach((filerow,filerowindex)=>{
+        //     dbborehole.data.forEach((dbrow,dbrowindex)=>{
+        //       if(JSON.stringify(filerow)===JSON.stringify(dbrow)){
+        //         console.log('Found Identical lRows' + filerow + ' = ' + dbrow)
+        //         bh.data.datablock.splice(i,1) //remove row from databucket not going to db
+        //       }
+        //       else{
+        //         //try to merge
+        //         var tmp = Array.prototype.push.apply(filerow,dbrow);
+        //         console.log('merged' + tmp)
+        //       }
+        //     })
+        //   })
+        // }
+      })
+      if(dbborehole){
+       
+           
         
         // boreholex.data.push(bh.data);
         //for each datablock compare all the same method data block and discard similar data rows
         //we dont need to keep redundant data
 
-       var methodData = dbborehole.data.filter((b,i)=>{
-              return  b.methodname == bh.data.methodname
-            })
-            if(methodData.length > 0){
-              
-           await methodData[0].datablock.forEach((e,i)=>{
-                bh.data.datablock.forEach((x,i)=>{
-                  // console.log(e)
-                  // console.log(x)
-                  if(JSON.stringify(x)===JSON.stringify(e)){
-                    console.log(x==e)
-                    bh.data.datablock.splice(i,1)
-                    //here we will have to do the merging
-                    //if the D is equal add the additional params to the same block 
-                    //prev data D=0.1,C=0.5,X=0.2
-                    //new row D=0.1,N=0.8,Z=0.3,C=0.6
-                    //db row after update D=0.1,C=0.5,X=0.2,N=0.8
-                    //? what happens for same row in a new file different value is available for existing row***
-                    //can we have two rows with different data for the same row - I think we cannot and we should not
+        //find whether details available for new method
+        // var methodData = dbborehole.data.filter((b, i) => {
+        //   return b.methodname == bh.data.methodname
+        // })
+        //a data set for the running method is available in db
+          //   if(methodData.length > 0){
 
-                    //ANSWER RECEIVED
-                    // in that case we need to ask the user 3 options: choose the first data, choose the second data, add that information 
-                    // to a new borehole because we cant merge that data since it is in the same depth                    
-                  }
-                  else{
-                    //here i think we can get the difference between two objects
-                    //we cant tell from whihc file this data comes as there is a merging happends
-                    //we can update a last update data and last added file name or somethisn
 
-                    //a new screen with 
-                    // var test = JSON.stringify(x).diff(JSON.stringify(e))
-                    //ammend the diff to existing row 
 
-                    //save them as conflicted data and until they clean them up show them a notification saying that 
-                    //there are some conflickted data and set them manually
-                  }
-                })
-              })            
-            }           
+          // //  await methodData.forEach((e,i)=>{   
+          //  await methodData[0].datablock.forEach((e,i)=>{
+          //       bh.data.datablock.forEach((x,i)=>{
+                  
+          //         // if(JSON.stringify(x)===JSON.stringify(e.datablock)){
+          //         if(JSON.stringify(x)===JSON.stringify(e)){
+          //           console.log(x==e)
+          //           bh.data.datablock.splice(i,1)
+          //           //here we will have to do the merging
+          //           //if the D is equal add the additional params to the same block 
+          //           //prev data D=0.1,C=0.5,X=0.2
+          //           //new row D=0.1,N=0.8,Z=0.3,C=0.6
+          //           //db row after update D=0.1,C=0.5,X=0.2,N=0.8
+          //           //? what happens for same row in a new file different value is available for existing row***
+          //           //can we have two rows with different data for the same row - I think we cannot and we should not
 
-        bh.data.datablock.length > 0 ? await Borehole.updateOne({ _id: dbborehole._id },{ $push: { data: bh.data }}) : null
+          //           //ANSWER RECEIVED
+          //           // in that case we need to ask the user 3 options: choose the first data, choose the second data, add that information 
+          //           // to a new borehole because we cant merge that data since it is in the same depth                    
+          //         }
+          //         else{
+          //           bh.data.datablock.push(x)
+          //           //check if the depth is same
+          //           //if depth same check each and every other params are same 
+          //           //working
+          //           // var breakdbline = e.split(',')
+          //           // var breakfileline = x.split(',')
+
+          //           // breakdbline.forEach((dbparam,dbi)=>{
+          //           //   breakfileline.forEach((bfparam,dfi)=>{
+          //           //       if(dbparam != bfparam){
+          //           //         console.log('equal depath ' + dbparam + ' - ' + bfparam)
+                            
+          //           //       }                      
+          //           //   })
+          //           // })
+          //           //working
+
+          //           //if depth same and two params are identical ask from user whihch one to keep and which one to discard
+
+
+          //           //here i think we can get the difference between two objects
+          //           //we cant tell from whihc file this data comes as there is a merging happends
+          //           //we can update a last update data and last added file name or somethisn
+
+          //           //a new screen with 
+          //           // var test = JSON.stringify(x).diff(JSON.stringify(e))
+          //           //ammend the diff to existing row 
+
+          //           //save them as conflicted data and until they clean them up show them a notification saying that 
+          //           //there are some conflickted data and set them manually
+          //         }
+          //       })
+          //     })            
+          //   }           
+
+        // bh.data.datablock.length > 0 ? await Borehole.updateOne({ _id: dbborehole._id },{ $push: { data: bh.data }}) : null
+        //bh.data.datablock.length > 0 ? await Borehole.updateOne({ _id: dbborehole._id },{ data: bh.data }) : null
       }
       else{
-        console.log('insert new')
+        console.log('insert new borehole data set')
         await Borehole.create(bh)
       }      
     })
     /* end save data */
+
+    const processLines = async(filerow,dbrow)=>{
+      var fr = filerow.split(',')
+      var dr = dbrow.split(',')
+var line = []
+      fr.forEach(f=>{
+        dr.forEach(d=>{
+        if(f == d){
+
+        }
+        })
+      })
+    }
     
     //console.log('x data ' + _borehole)
     //var data = {'borehole' : BOREHOLENAMES[_currentBlock] , 'method' : METHODNAMES[_currentBlock], 'block' : DATA}

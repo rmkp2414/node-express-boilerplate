@@ -21,6 +21,11 @@ const boreholeSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    filepath:{
+      type: String,
+      required: true,
+      trim: true,
+    },
     // methods: {
     //   type: [],
     //   // required: true,      
@@ -29,21 +34,37 @@ const boreholeSchema = mongoose.Schema(
     //   type: [],
     //   required: true,      
     // },
-    data:[{
-      methodname:{
-        type:String,
-        required:true,
-        trim:true
-      },
-      file:{
-        type:String,
-        required:true,
-        trim:true
-      },
-      datablock :{
-        type:[]
-      }
-    }],
+    methodname:{
+      type:String,
+      required:true,
+      trim:true
+    },
+    filename:{
+      type:String,
+      required:true,
+      trim:true
+    },
+    uploadedby:{
+      type:String,
+      required:true,
+      trim:true
+    },
+    data:[]
+    // data:[{
+    //   // methodname:{
+    //   //   type:String,
+    //   //   required:true,
+    //   //   trim:true
+    //   // },
+    //   // file:{
+    //   //   type:String,
+    //   //   required:true,
+    //   //   trim:true
+    //   // },
+    //   datablock :{
+    //     type:[]
+    //   }
+    // }],
     // email: {
     //   type: String,
     //   required: true,

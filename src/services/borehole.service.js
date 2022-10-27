@@ -89,7 +89,27 @@ const deleteUserById = async (userId) => {
  const getBoreholeByMethodAndId = async (method) => {
   // return Borehole.findOne({ 'methodname': method ,'boreholename' : '21A061' });
   // return Borehole.find({ 'methodname': method ,'boreholename' : '21A061' });
-  return Borehole.find({'boreholename' : '21A063' });
+  const data = await Borehole.find({'boreholename' : '21A063' })//.then((data)=>{
+    // const data = await Borehole.find({'methodname' : 'CPTU' })
+    return data;
+    // if (err) {
+    //   throw new ApiError(httpStatus.NOT_FOUND, 'boreholename not found');
+    // }
+ //   console.log('print 1' + data.boreholename)
+ //   return data;
+  //});
+// if(data){
+//   data.then((docs)=>{
+//     console.log('print 2' + docs.boreholename)
+// return docs;
+//   }).catch(err=>{
+//     console.log(err)
+//   })
+// }
+
+  
+
+
 };
 
 
