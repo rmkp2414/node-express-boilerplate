@@ -1,0 +1,13 @@
+0.000000 2017-08-31 0 1 0 0 GUID 8224781b-8f37-4e41-8e6b-8822d01cbd89
+*
+SKR    0.30 J N J     0.00      0     0.00      0      0                      
+SKR    1.00 J N J     0.00      0     0.00      0      0 Mg [husasiCldc pl]   5B/4
+SKR    2.00 J N J     0.00      0     0.00      0      0 Mg [saleGr brick]    3B/2
+SKR    2.50 J N J     0.00      0     0.00      0      0 le Gy                6A/4
+SKR    2.80 J N J     0.00      0     0.00      0      0 gy Cl                5B/4
+SKR    3.50 J N J     0.00      0     0.00      0      0 v Cl                 4B/3
+KV1    4.00 N N J    11.00     11     1.83     56     43 v Cl                 
+KV1    6.00 N N J    10.90     19     1.55     75     56 su v Cl              
+KV1    8.00 N N J    11.50     21     1.71     55     46 su v Cl              
+KV1   10.00 N N J    12.90     28     1.67     62     51 su v Cl              
+*

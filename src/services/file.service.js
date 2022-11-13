@@ -116,6 +116,252 @@ var _activeParamsFromDB = []
       }
       if(ISSND){
           console.log('SND READING')
+          
+          /* first identify the file type prv, gvr , vm, jb2 etc 
+          if the file extension is prv the borehole name comes in the filename
+          */        
+         var filename = file.originalname;
+         var fileext = filename.split('.')  
+        
+
+
+          var boreholename = fileext[0]
+            //BOREHOLENAMES.push(boreholename)
+
+            _borehole.boreholename = boreholename
+            _borehole.projectid  = '0000001'
+            _borehole.firmid = 'COMPANYID'
+            _borehole.filepath = '/uploads'
+            _borehole.filename =  file.originalname
+            _borehole.uploadedby = "kapila" //get the name from token
+
+            const prv =  fileext[1]== 'PRV' ? true : false;
+            const snd = fileext[1]== 'SND' ? true : false;
+            const tlk =  fileext[1]== 'TLK' ? true : false;
+            const gvr = fileext[1]== 'GVR' ? true : false;
+            
+
+            /* //process the data rows
+            data objects are different based on the methods and file types
+            create the data objects accordingly
+
+            Look for xyz values in file whihc they are available
+
+            first we have to read all the lines and after that based on the type we will have to 
+            do the reading based on logic 
+            
+             */
+            if(prv){
+              console.log(filename)
+/* 
+0.000000 2017-08-31 0 1 0 0 GUID 8224781b-8f37-4e41-8e6b-8822d01cbd89
+*
+SKR    0.30 J N J     0.00      0     0.00      0      0                      
+SKR    1.00 J N J     0.00      0     0.00      0      0 Mg [husasiCldc pl]   5B/4
+SKR    2.00 J N J     0.00      0     0.00      0      0 Mg [saleGr brick]    3B/2
+SKR    2.50 J N J  
+*/
+            }
+            if(snd){
+              console.log(filename)
+              /* 
+6582016.485000
+148732.956000
+14.424000
+0.000000
+0.000000
+0.000000 0 90.000000
+*
+97
+40 0
+*
+99
+GUID ab825604-2c43-4590-8682-12863d157ae2
+014c5c88-3983-40de-a8ad-502e9409d050
+796533 Huvudsta 3_1
+17IT001
+*
+3 2017-07-06
+1.000000 91 0 3 1 1725 17IT001*20170706*1724.VIM GUID 8cdba5bf-0c0d-479f-8739-9a160c196aed
+1.200    3 100      31              
+               */
+            }
+            if(gvr){
+              console.log(filename)
+              /* 
+              6581998.298000
+148819.892000
+15.772000
+0.000000
+0.000000
+RF 0 0 GUID 1e6d472b-24bc-44ef-bb55-3673394d1c64
+16.750000 0
+4.250000 90.000000
+0.500000 11.157242 
+*
+ 2017 7 12 13.100000 N FUNKTIONSKONTROLL OK
+ 2017 8 22 10.639999 J
+ 2017 9 5 10.920000 J */
+            }
+            if(tlk){
+              console.log(filename)
+            /* torrskorpa 33 0 0        Torrskorpa
+12.8237 
+0.00   0.00   0.00   0.00   0.00   0.00
+lera 11 0 0              Lera
+  9.4278 
+0.00   0.00   0.00   0.00   0.00   0.00
+friktjord 36 0 0         Friktionsjord
+  6.0052 
+0.00   0.00   0.00   0.00   0.00   0.00
+*
+*/
+            }
+
+         
+    var methodDetailsAvailable = false;
+
+    var starCount  = 0
+    var currentLine =0;
+    var x,y,z , section,distance, predrill,bearing,tilt,guid // guid is not interested in reading discard for the moment
+    //turn it on and off guid
+    var headDetailRead = false;
+    // var rl = readline(file_path);
+    // rl.on('line', function(line, lineCount, byteCount) {
+      // do something with the line of text
+      console.log(line +'   : '+ lineCount )
+
+      line == "*" ? starCount++ : null
+
+      if(starCount==1){
+          //get related details
+          
+      }
+      if(starCount==2){
+        if(line.contains('GUID')) //will look this little later 
+        guid = line
+
+          //get related details
+      }
+
+      if(starCount==3)
+      {
+        var methoddetailsLine = lineCount+1
+          methodDetailsAvailable = true;
+      }
+      if(methoddetailsLine == lineCount){
+        var method = line[currentLine+1].split(' ')
+        var HM = method[0]
+        var date = method[1]
+
+        //get more details 
+        
+      }
+      if(lineCount == methoddetailsLine+1 ){
+        var more = line.split(' ');
+
+        var stopcode = more[1]
+        var maxforce = more[3]
+        var HB = more[5]
+        headDetailRead = true
+      }
+      if(headDetailRead){
+        //these are data for that file
+        var data = [] 
+        var datasplit = line.split(' ')
+          var row = {
+              'Depth': datasplit[0],
+              'penterationresistance': datasplit[1],
+              'penterationrate': datasplit[2],
+              'feedtrustfprce': datasplit[3],
+              'rotationspeed': datasplit[4],
+              'flushpressure': datasplit[5],
+              'flushrate': datasplit[6],
+              'hydrallichammerpressure': datasplit[7],
+              'pressureinrotarymoter': datasplit[8],
+              'actualsoilinterpretation': datasplit[9]
+          }
+      }
+    // })
+    // .on('error', function(e) {
+    //   // something went wrong
+    // });
+    
+ 
+    // const file = readline.createInterface({
+    //     input: Fs.createReadStream(file_path),
+    //     output: process.stdout,
+    //     terminal: false
+    // });
+
+    // var methodDetailsAvailable = false;
+
+    // var starCount  = 0
+    // var currentLine =0;
+    // var x,y,z
+    // file.on('line', (line,lineCount) => {
+        
+        
+
+    //     line == "*" ? starCount++ : null
+
+    //     if(starCount==1){
+    //         //get related details
+    //     }
+    //     if(starCount==2){
+    //         //get related details
+    //     }
+
+    //     if(starCount==3)
+    //     {
+    //         methodDetailsAvailable = true;
+    //     }
+    //     if(methodDetailsAvailable){
+    //         var method = line[currentLine+1].split(' ')
+    //         var HM = method[0]
+    //         var date = method[1]
+
+    //         //get more details 
+    //         var more = line[currentLine+2].split(' ');
+            
+
+    //     }
+        
+    //     x = currentLine == 1 ? line : x
+    //     y = currentLine == 2 ? line : y
+    //     z = currentLine ==3 ? line : z
+
+    //     var METHOD = currentLine == 17 ? line.split(' ')[0] : null
+    //     var PERFORMEDDATE = currentLine == 17 ? line.split(' ')[1] : null
+
+    //     console.log('x : ' + x + ' y : ' + y + ' z : ' + z + 'star Count' + starCount) ;
+    //     console.log(METHOD)
+    //     console.log(PERFORMEDDATE)  
+
+    //     if(currentLine == 17){
+    //         // throw '';
+    //         throw new Error('no need to go ahead');
+            
+    //     }
+
+    //     // if(line == "*")
+    //     // {
+    //     //     starCount++
+    //     // }
+    //     // if(starCount==1)
+    // // }).on('end',()=>{
+    // //     console.log('x : ' + x + 'y : ' + y + 'z : ' + z) ;
+    // //     console.log(METHOD)
+    // //     console.log(PERFORMEDDATE) 
+    
+    // currentLine++;
+    // }).on('error',(e)=>{
+    //     console.log('error' + e)
+    // })
+
+
+
+
       }
       if(ISSTD){
         console.log('STD/CSV READING')
@@ -351,7 +597,7 @@ var _activeParamsFromDB = []
         console.log('insert new borehole data set')
         await Borehole.create(bh)
       }
-      return;
+      // return;
       //existing borehole details
       dbborehole.then(docs=>{
          console.log(docs)
@@ -455,18 +701,19 @@ var _activeParamsFromDB = []
     })
     /* end save data */
 
-    const processLines = async(filerow,dbrow)=>{
-      var fr = filerow.split(',')
-      var dr = dbrow.split(',')
-var line = []
-      fr.forEach(f=>{
-        dr.forEach(d=>{
-        if(f == d){
+    //remove this method rightaways if not needed
+    // const processLines = async(filerow,dbrow)=>{
+    //   var fr = filerow.split(',')
+    //   var dr = dbrow.split(',')
+    //   var line = []
+    //   fr.forEach(f=>{
+    //     dr.forEach(d=>{
+    //     if(f == d){
 
-        }
-        })
-      })
-    }
+    //     }
+    //     })
+    //   })
+    // }
     
     //console.log('x data ' + _borehole)
     //var data = {'borehole' : BOREHOLENAMES[_currentBlock] , 'method' : METHODNAMES[_currentBlock], 'block' : DATA}
@@ -597,6 +844,9 @@ const deleteUserById = async (userId) => {
   await user.remove();
   return user;
 };
+
+
+
 
 module.exports = {
   createUser,
